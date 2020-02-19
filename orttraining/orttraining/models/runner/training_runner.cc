@@ -21,6 +21,10 @@
 #include "core/providers/cuda/cuda_execution_provider.h"
 #endif
 
+#ifdef USE_HIP
+#include "core/providers/hip/hip_execution_provider.h"
+#endif
+
 namespace onnxruntime {
 namespace training {
 
@@ -162,6 +166,15 @@ Status TrainingRunner::Initialize() {
     auto cuda_xp = onnxruntime::make_unique<CUDAExecutionProvider>(xp_info);
     pinned_allocator_ = cuda_xp->GetAllocator(0, OrtMemTypeCPUOutput);
     ORT_RETURN_IF_ERROR(session_.RegisterExecutionProvider(std::move(cuda_xp)));
+  }
+#endif
+
+#ifdef USE_HIP
+  if (params_.use_cuda) {
+    HIPExecutionProviderInfo xp_info{static_cast<OrtDevice::DeviceId>(params_.mpi_context.local_rank)};
+    auto hip_xp = onnxruntime::make_unique<HIPExecutionProvider>(xp_info);
+    pinned_allocator_ = hip_xp->GetAllocator(0, OrtMemTypeCPUOutput);
+    ORT_RETURN_IF_ERROR(session_.RegisterExecutionProvider(onnxruntime::make_unique<HIPExecutionProvider>(xp_info)));
   }
 #endif
 
