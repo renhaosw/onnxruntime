@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 #include "core/providers/cpu/ml/svmregressor.h"
-#include "core/providers/cpu/math/gemm.h"
 
 namespace onnxruntime {
 namespace ml {
@@ -90,7 +89,8 @@ Status SVMRegressor<T>::Compute(OpKernelContext* ctx) const {
     float* y_end = y + out.size();
 
     while (y < y_end) {
-      *y++ = (*y > 0.f ? 1.f : -1.f);
+      *y = (*y > 0.f ? 1.f : -1.f);
+      ++y;
     }
   }
 

@@ -7,8 +7,7 @@
 #include "core/framework/op_kernel.h"
 #include "core/util/math_cpuonly.h"
 #include "ml_common.h"
-
-#include "core/providers/cpu/activation/activations.h"
+#include "core/providers/cpu/math/gemm.h"
 
 namespace onnxruntime {
 namespace ml {
@@ -132,6 +131,7 @@ class SVMCommon {
 
 template <typename T>
 class SVMClassifier final : public OpKernel, private SVMCommon<T> {
+  using SVMCommon<T>::batched_kernel_dot;
   using SVMCommon<T>::kernel_dot;
   using SVMCommon<T>::set_kernel_type;
   using SVMCommon<T>::get_kernel_type;
