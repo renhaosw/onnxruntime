@@ -82,7 +82,13 @@ class SVMCommon {
 
       if (kernel_type_ == KERNEL::POLY) {
         auto map_out = EigenVectorArrayMap<T>(out.data(), out.size());
-        map_out = map_out.pow(degree_) + scalar_C;
+        if (degree_ == 2)
+          map_out = map_out.square() + scalar_C;
+        else if (degree_ == 3)
+          map_out = map_out.cube() + scalar_C;
+        else
+          map_out = map_out.pow(degree_) + scalar_C;
+
       } else if (kernel_type_ == KERNEL::SIGMOID) {
         auto map_out = EigenVectorArrayMap<T>(out.data(), out.size());
         map_out = map_out.tanh() + scalar_C;
