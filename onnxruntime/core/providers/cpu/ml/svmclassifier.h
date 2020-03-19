@@ -90,8 +90,7 @@ class SVMCommon {
           map_out = map_out.pow(degree_);
 
       } else if (kernel_type_ == KERNEL::SIGMOID) {
-        auto map_out = EigenVectorArrayMap<T>(out.data(), out.size());
-        map_out = map_out.tanh();
+        MlasComputeTanh(out.data(), out.data(), out.size());
       }
     }
   }
