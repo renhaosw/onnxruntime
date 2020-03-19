@@ -65,7 +65,7 @@ class SVMCommon {
       float alpha = 1.f;
       float beta = 1.f;
       static const TensorShape shape_C({1});
-      float c = scalar_C;
+      float c = scalar_C;  // scalar_C is used for LINEAR in the GEMM
 
       if (kernel_type_ != KERNEL::LINEAR) {
         // kernel_type_ == POLY or SIGMOID
@@ -83,15 +83,15 @@ class SVMCommon {
       if (kernel_type_ == KERNEL::POLY) {
         auto map_out = EigenVectorArrayMap<T>(out.data(), out.size());
         if (degree_ == 2)
-          map_out = map_out.square() + scalar_C;
+          map_out = map_out.square();
         else if (degree_ == 3)
-          map_out = map_out.cube() + scalar_C;
+          map_out = map_out.cube();
         else
-          map_out = map_out.pow(degree_) + scalar_C;
+          map_out = map_out.pow(degree_);
 
       } else if (kernel_type_ == KERNEL::SIGMOID) {
         auto map_out = EigenVectorArrayMap<T>(out.data(), out.size());
-        map_out = map_out.tanh() + scalar_C;
+        map_out = map_out.tanh();
       }
     }
   }
