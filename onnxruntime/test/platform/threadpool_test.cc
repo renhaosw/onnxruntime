@@ -103,14 +103,7 @@ TEST(ThreadPoolTest, TestBatchParallelFor_2_Thread_81_Task_20_Batch) {
 }
 
 #ifdef _WIN32
-int compare(const void* arg1, const void* arg2) {
-  /* Compare all of both strings: */
-  return _stricmp(*(char**)arg1, *(char**)arg2);
-}
 TEST(ThreadPoolTest, TestStackSize) {
-  const char* str[] = {"boy", "deserves", "every", "favor", "good"};
-  qsort((void*)str, (size_t)5, sizeof(char*), compare);
-
   ThreadOptions to;
   // For ARM, x86 and x64 machines, the default stack size is 1 MB
   // We change it to a different value to see if the setting works

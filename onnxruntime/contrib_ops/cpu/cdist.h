@@ -24,8 +24,10 @@ template <typename T, typename ElemFunc>
 void cdist_single_threaded(const T* a, const T* b, T* dest, size_t ma, size_t mb, size_t n) {
   ElemFunc f;
   for (size_t i = 0; i != ma; ++i) {
+    // i-th row of matrix A
     const T* a1 = a + n * i;
     for (size_t j = 0; j != mb; ++j) {
+      // j-th row of matrix B
       const T* b1 = b + n * j;
       *dest++ = f(a1, b1, n);
     }

@@ -181,15 +181,10 @@ void ThreadPool::ParallelForFixedBlockSizeScheduling(const std::ptrdiff_t total,
     fn(first, last);
     counter.DecrementCount();  // The shard is done.
   };
-  if (num_shards_used <= NumThreads()) {
-    // Avoid a thread hop by running the root of the tree and one block on the
-    // main thread.
-    handle_range(0, total);
-  } else {
-    // Execute the root in the thread pool to avoid running work on more than
-    // numThreads() threads.
-    Schedule([=, &handle_range]() { handle_range(0, total); });
-  }
+
+  // Execute the root in the thread pool to avoid running work on more than
+  // numThreads() threads.
+  Schedule([=, &handle_range]() { handle_range(0, total); });
   counter.Wait();
 }
 
