@@ -599,12 +599,12 @@ static Status CopySparseData(size_t n_sparse_elements,
   Status status = Status::OK();
   TensorShape indices_shape(indices.dims().data(), indices.dims().size());
 
-  auto indices_data = gsl::make_span<const int64_t>(indices.int64_data().data(), indices_shape.Size());
+  auto indices_data = gsl::make_span<const int64_t>(indices.int64_data().data(), static_cast<size_t>(indices_shape.Size()));
 
   if (indices_shape.NumDimensions() == 1) {
     // flattened indexes
     for (size_t i = 0; i < n_sparse_elements; ++i) {
-      copier(i, indices_data[i]);
+      copier(i, static_cast<size_t>(indices_data[i]));
     }
   } else if (indices_shape.NumDimensions() == 2) {
     // entries in format {NNZ, rank}
@@ -617,8 +617,8 @@ static Status CopySparseData(size_t n_sparse_elements,
     // calculate sum of inner dimension elements for each dimension.
     // e.g. if shape {2,3,4}, the result should be {3*4, 4, 1}
     multipliers[rank - 1] = 1;
-    for (int64_t r = rank - 2; r >= 0; --r) {
-      multipliers[r] = dims[r + 1] * multipliers[r + 1];
+    for (int64_t r = static_cast<int64_t>(rank) - 2; r >= 0; --r) {
+      multipliers[r] = static_cast<size_t>(dims[r + 1]) * multipliers[r + 1];
     }
 
     // calculate the offset for the entry
@@ -627,7 +627,7 @@ static Status CopySparseData(size_t n_sparse_elements,
     for (size_t i = 0; i < n_sparse_elements; ++i) {
       size_t idx = 0;
       for (size_t j = 0; j < rank; ++j) {
-        idx += cur_index[j] * multipliers[j];
+        idx += static_cast<size_t>(cur_index[j]) * multipliers[j];
       }
 
       copier(i, idx);
