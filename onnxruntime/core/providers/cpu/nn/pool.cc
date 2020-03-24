@@ -10,26 +10,10 @@ using namespace ::onnxruntime::common;
 
 namespace onnxruntime {
 
-#ifdef USE_OPENMP
-template <typename T>
-static void RunLoop(concurrency::ThreadPool*, Eigen::Index total_channels, T&& task) {
-#pragma omp parallel for
-  for (int64_t c = 0; c < total_channels; ++c) {
-    task(c);
-  }
-}
-#else
 template <typename T>
 static void RunLoop(concurrency::ThreadPool* tp, Eigen::Index total_channels, T&& task) {
-  if (tp == nullptr || total_channels <= 1) {
-    for (Eigen::Index c = 0; c < total_channels; ++c) {
-      task(c);
-    }
-  } else {
-    tp->ParallelFor(total_channels, task.Cost(), task);
-  }
+  concurrency::ThreadPool::TryParallelFor(tp, total_channels, task.Cost(), task);
 }
-#endif
 
 template <typename T, typename PoolType>
 Status Pool<T, PoolType>::Compute(OpKernelContext* context) const {
